@@ -1,8 +1,8 @@
 apiVersion: v2
 name: moonin-ai-sync
-description: CronJob that refreshes the Vertex AI token and URL for all arguz-ai organizations.
+description: CronJob that refreshes the AI token and URL for all moonin-ai organizations.
 
 type: application
 
 version: 0.1.0
-appVersion: "latest"
+appVersion: "0.1.0"
