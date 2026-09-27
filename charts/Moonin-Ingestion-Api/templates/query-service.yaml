@@ -1,0 +1,18 @@
+{{- if .Values.queryApi.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "moonin-ingestion-api.queryFullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "moonin-ingestion-api.queryLabels" . | nindent 4 }}
+spec:
+  type: {{ .Values.queryApi.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.queryApi.service.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "moonin-ingestion-api.querySelectorLabels" . | nindent 4 }}
+{{- end }}

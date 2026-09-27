@@ -1,0 +1,80 @@
+replicaCount: 1
+image:
+  repository: us-central1-docker.pkg.dev/arguz-prod/moonin/moonin-notifier-engine
+  pullPolicy: IfNotPresent
+  tag: ""
+imagePullSecrets: []
+license:
+  existingSecret: moonin-license
+  key: MOONIN_LICENSE
+databaseSecret:
+  existingSecret: db-secret
+  key: DATABASE_URL
+config:
+  # Public links used in notification messages.
+  appBaseURL: https://portal.moonin.app
+  portalBaseURL: https://portal.moonin.app
+  logLevel: info
+  engineIntervalSeconds: 10
+  engineWindowSeconds: 300
+  engineThrottleMinutes: 5
+  deliveryBatch: 100
+  maxSendAttempts: 5
+  httpTimeoutSeconds: 15
+  claimLeaseSeconds: 120
+  telemetryAlertsEnabled: true
+  jetStreamEnabled: true
+  jetStreamAckWaitSeconds: 30
+  jetStreamMaxDeliver: 3
+  natsURL: nats://nats.nats.svc.cluster.local:4222
+  natsSubjectEnv: production
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+podSecurityContext: {}
+securityContext: {}
+
+extraEnv: []
+
+redis:
+  enabled: true
+  image: "redis:7.4-alpine"
+  port: 6379
+  maxmemory: "256mb"
+  maxmemoryPolicy: "allkeys-lru"
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 30m
+    memory: 50Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+volumes: []
+volumeMounts: []
+nodeSelector: {}
+tolerations: []
+affinity: {}

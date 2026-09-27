@@ -1,0 +1,715 @@
+moonin-chatbot-api:
+  enabled: true
+  image:
+    repository: ghcr.io/moonin-lab/moonin-platform/moonin-chatbot-api
+    tag: "20260927132332"
+  mcpInternalUrl: "http://moonin-platform-moonin-mcp-server.arguz.svc.cluster.local:8080"
+  license:
+    existingSecret: moonin-license
+    key: MOONIN_LICENSE
+
+moonin-api:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/moonin-lab/moonin-platform/moonin-api
+    pullPolicy: IfNotPresent
+    tag: "20260926201303"
+
+  # Moonin API validates this signed license before starting. Kubernetes Secrets
+  # are namespace-scoped: create this Secret in the namespace where this Helm
+  # release is installed (currently `arguz`), not in a different namespace.
+  license:
+    existingSecret: moonin-license
+    key: MOONIN_LICENSE
+
+  # Secret in the release namespace containing the PostgreSQL connection used
+  # by Moonin API. The installer creates this as db-secret by default.
+  databaseSecret:
+    existingSecret: db-secret
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+  service:
+    type: ClusterIP
+    servicePort: 4000
+    backendPort: 4001
+
+
+  ingress:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    hosts:
+      - host: api-discover.moonin.app
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: moonin-app-tls
+        hosts:
+          - api-discover.moonin.app
+
+  resources:
+    limits:
+      cpu: 300m
+      memory: 400Mi
+    requests:
+      cpu: 50m
+      memory: 50Mi
+
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 4001
+  readinessProbe:
+    httpGet:
+      path: /healthz
+      port: 4001
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 90
+    
+  volumes: []
+  volumeMounts: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+moonin-scaling-rules-api:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/moonin-lab/moonin-platform/moonin-scaling-rules-api
+    pullPolicy: IfNotPresent
+    tag: "20260926211639"
+
+  # The Scaling Rules API validates this same signed license before opening
+  # database connections or listening on its HTTP ports.
+  license:
+    existingSecret: moonin-license
+    key: MOONIN_LICENSE
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+  service:
+    type: ClusterIP
+    servicePort: 3100
+    backendPort: 3101
+
+  ingress:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    hosts:
+      - host: api-scaling-rules.moonin.app
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: moonin-app-tls
+        hosts:
+          - api-scaling-rules.moonin.app
+
+  resources:
+    limits:
+      cpu: 300m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 50Mi
+
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 3101
+  readinessProbe:
+    httpGet:
+      path: /healthz
+      port: 3101
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 90
+    
+  volumes: []
+  volumeMounts: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+moonin-portal-ui:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/moonin-lab/moonin-platform/moonin-portal-ui
+    pullPolicy: IfNotPresent
+    tag: "20260926234857"
+
+  # Server-side Portal authentication configuration. Create it with:
+  # moonin-installer platform install
+  portalSecret:
+    existingSecret: moonin-front-secret
+
+  # The Portal validates the signed license server-side at startup. This is
+  # intentionally not a NEXT_PUBLIC_ value and is never sent to browsers.
+  license:
+    existingSecret: moonin-license
+    key: MOONIN_LICENSE
+
+  imagePullSecrets:
+    - name: ghcr-secret
+  nameOverride: ""
+  fullnameOverride: ""
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations:
+      iam.gke.io/gcp-service-account: arguz-app-prod@arguz-prod.iam.gserviceaccount.com
+    name: ""
+
+  env:
+    api_base_url: "http://moonin-platform-moonin-api.arguz.svc.cluster.local:4001"
+    admin_url: "https://admin.moonin.app"
+    api_scaling_backend_url: "http://moonin-platform-moonin-scaling-rules-api.arguz.svc.cluster.local:3101"
+    demo_email: "demo@moonin.app"
+    ingestion_query_api_base_url: "http://moonin-platform-query.arguz.svc.cluster.local:8082"
+    auto_verify_email_on_signup: "true"
+    ingestion_query_api_internal_token_secret:
+      name: moonin-platform-query-auth
+      key: internal-token
+    portal_mcp_delegation_enabled: "true"
+    mcp_internal_url: "http://moonin-platform-moonin-mcp-server.arguz.svc.cluster.local:8080"
+    mcp_delegation_secret:
+      name: moonin-ai-delegation
+      key: secret
+    chatbot_api_url: "http://moonin-platform-moonin-chatbot-api.arguz.svc.cluster.local:8080"
+    chatbot_api_secret:
+      name: moonin-chatbot
+      key: gateway-secret
+
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+  service:
+    type: ClusterIP
+    port: 80
+    containerPort: 3000
+
+  startupProbe:
+    httpGet:
+      path: /
+      port: http
+    periodSeconds: 5
+    failureThreshold: 30
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+    periodSeconds: 15
+    failureThreshold: 3
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    periodSeconds: 5
+    failureThreshold: 3
+
+  ingress:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    hosts:
+      - host: portal.moonin.app
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: moonin-app-tls
+        hosts:
+          - portal.moonin.app
+
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 50m
+      memory: 50Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 90
+  volumes: []
+  volumeMounts: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+moonin-admin-ui:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/moonin-lab/moonin-platform/moonin-admin-ui
+    pullPolicy: IfNotPresent
+    tag: "20260927132724"
+
+  license:
+    existingSecret: moonin-license
+    key: MOONIN_LICENSE
+
+  imagePullSecrets:
+    - name: ghcr-secret
+  nameOverride: ""
+  fullnameOverride: ""
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations:
+      iam.gke.io/gcp-service-account: arguz-admin-prod@arguz-prod.iam.gserviceaccount.com
+    name: ""
+
+  env:
+    api_base_url: "http://moonin-platform-moonin-api.arguz.svc.cluster.local:4001"
+    app_url: "https://portal.moonin.app"
+    api_scaling_backend_url: "http://moonin-platform-moonin-scaling-rules-api.arguz.svc.cluster.local:3101"
+    demo_email: "demo@moonin.app"
+    auto_verify_email_on_signup: "true"
+
+
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+  service:
+    type: ClusterIP
+    port: 80
+    containerPort: 3000
+  
+  ingress:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    hosts:
+      - host: admin.moonin.app
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: moonin-app-tls
+        hosts:
+          - admin.moonin.app
+
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 50m
+      memory: 50Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  volumes: []
+  volumeMounts: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+moonin-notifier-engine:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/moonin-lab/moonin-platform/moonin-notifier-engine
+    pullPolicy: IfNotPresent
+    tag: "20260927151458"
+  imagePullSecrets: []
+  license:
+    existingSecret: moonin-license
+    key: MOONIN_LICENSE
+  # DATABASE_URL comes from the installer-managed db-secret. Do not create a
+  # second component database Secret.
+  databaseSecret:
+    existingSecret: db-secret
+    key: DATABASE_URL
+  nameOverride: ""
+  fullnameOverride: ""
+  # Non-sensitive Notifier settings are explicit Helm values. Optional
+  # provider webhooks remain unset; configure individual notification channels
+  # in Moonin instead of storing them in a shared deployment Secret.
+  config:
+    appBaseURL: "https://portal.moonin.app"
+    portalBaseURL: "https://portal.moonin.app"
+    logLevel: info
+    engineIntervalSeconds: 10
+    engineWindowSeconds: 300
+    engineThrottleMinutes: 5
+    deliveryBatch: 100
+    maxSendAttempts: 5
+    httpTimeoutSeconds: 15
+    claimLeaseSeconds: 120
+    telemetryAlertsEnabled: true
+    jetStreamEnabled: true
+    jetStreamAckWaitSeconds: 30
+    jetStreamMaxDeliver: 3
+    natsURL: "nats://nats.nats.svc.cluster.local:4222"
+    natsSubjectEnv: production
+  redis:
+    enabled: true
+    image: "redis:7.4-alpine"
+    port: 6379
+    maxmemory: "256mb"
+    maxmemoryPolicy: "allkeys-lru"
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        cpu: 250m
+        memory: 512Mi
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 30m
+      memory: 50Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  volumes: []
+  volumeMounts: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+moonin-mcp-server:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/moonin-lab/moonin-platform/moonin-mcp-server
+    pullPolicy: IfNotPresent
+    tag: "20260927102342"
+
+  # MCP validates this same signed license before connecting to PostgreSQL or
+  # serving its HTTP endpoint. The installer creates this Secret by default.
+  license:
+    existingSecret: moonin-license
+    key: MOONIN_LICENSE
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+  portalDelegation:
+    enabled: "true"
+    secret:
+      name: moonin-ai-delegation
+      key: secret
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+  service:
+    type: ClusterIP
+    port: 8080
+    containerPort: 8080
+
+
+  ingress:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    hosts:
+      - host: mcp.moonin.app
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: moonin-app-tls
+        hosts:
+          - mcp.moonin.app
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 8080
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 8080
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 90
+
+  volumes: []
+  volumeMounts: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+moonin-ingestion-api:
+  environment: production
+
+  license:
+    existingSecret: moonin-license
+    key: MOONIN_LICENSE
+
+  image:
+    repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-api
+    pullPolicy: IfNotPresent
+    tag: "20260927-114317"
+
+  api:
+    enabled: true
+
+  serviceAccount:
+    create: true
+    name: ""
+
+  databaseSecret:
+    name: db-secret
+    key: DATABASE_URL
+
+  workers:
+    enabled: true
+    bqProjectId: arguz-prod
+    jetstream:
+      maxAge: 1h
+      maxBytes: 40Gi
+      replicas: 3
+    pool:
+      metrics:
+        replicas: 2
+      events:
+        replicas: 2
+      traces:
+        replicas: 2
+    serviceAccount:
+      create: false
+      name: arguz-ingestion-workers
+    image:
+      repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-worker
+      pullPolicy: IfNotPresent
+      tag: "20260927-114317"
+
+  queryApi:
+    enabled: true
+    serviceAccount:
+      create: false
+      name: arguz-ingestion-query-api
+    env:
+      bqProjectId: arguz-prod
+      redisEnabled: "true"
+      redisAddr: "moonin-platform-query-redis:6379"
+    redis:
+      enabled: true
+    image:
+      repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-query-api
+      pullPolicy: IfNotPresent
+      tag: "20260927-114317"
+
+  jetstreamBootstrap:
+    enabled: true
+
+  ingress:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    hosts:
+      - host: ingestion-api.moonin.app
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: moonin-app-tls
+        hosts:
+          - ingestion-api.moonin.app
+
+# Moonin Billing & AISync configuration
+moonin-billing-sync:
+  # SaaS-only optional service. Set false for customer installations to omit
+  # the CronJob completely; runtime licensing enforces the same restriction.
+  enabled: true
+  # Keep the CronJob with moonin-license and db-secret. Kubernetes Secrets are
+  # namespace-scoped, so this must match the Platform release namespace.
+  namespace: moonin
+
+  schedule: "*/30 * * * *"
+
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  backoffLimit: 2
+
+  maxConcurrentHours: 4
+
+  image:
+    repository: ghcr.io/moonin-lab/moonin-platform/moonin-billing-sync
+    pullPolicy: IfNotPresent
+    tag: "20260927153242"
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+
+  dbSecret:
+    name: db-secret
+    key: DATABASE_URL
+  # This Secret exists in the same namespace as the Platform release.
+  license:
+    existingSecret: moonin-license
+    key: MOONIN_LICENSE
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 10m
+      memory: 64Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+moonin-ai-sync:
+  # SaaS-only optional service. Set false for customer installations to omit
+  # the CronJob completely; runtime licensing enforces the same restriction.
+  enabled: true
+  # Keep the CronJob with moonin-license and db-secret. Kubernetes Secrets are
+  # namespace-scoped, so this must match the Platform release namespace.
+  namespace: moonin
+
+  # Optional pre-created Kubernetes ServiceAccount for cloud workload identity.
+  serviceAccountName: ai-sync
+
+  schedule: "*/30 * * * *"
+
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  backoffLimit: 2
+
+  image:
+    repository: ghcr.io/moonin-lab/moonin-platform/moonin-ai-sync
+    pullPolicy: IfNotPresent
+    tag: "20260927164852"
+
+  nameOverride: ""
+  fullnameOverride: ""
+
+  # Leave empty to use the default model (google/gemini-2.5-flash-lite).
+  aiModel: ""
+
+  # Secret that holds DATABASE_URL.
+  dbSecret:
+    name: db-secret
+    key: DATABASE_URL
+  # This Secret exists in the same namespace as the Platform release.
+  license:
+    existingSecret: moonin-license
+    key: MOONIN_LICENSE
+
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    runAsUser: 1000
+    readOnlyRootFilesystem: true
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

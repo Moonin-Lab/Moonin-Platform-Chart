@@ -1,0 +1,8 @@
+1. The Arguz AI Sync CronJob has been deployed.
+
+   Schedule: {{ .Values.schedule }}
+   Namespace: {{ .Values.namespace }}
+   Service Account: {{ .Values.serviceAccountName }}
+
+   The CronJob refreshes the Vertex AI token and endpoint URL for all organizations
+   with ai_provider = 'arguz-ai' via GKE Workload Identity.

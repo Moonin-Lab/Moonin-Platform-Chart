@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "moonin-portal-ui.fullname" . }}
+  labels:
+    {{- include "moonin-portal-ui.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "moonin-portal-ui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "moonin-portal-ui.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "moonin-portal-ui.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.containerPort }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: {{ required "moonin-portal-ui.portalSecret.existingSecret is required" .Values.portalSecret.existingSecret | quote }}
+          env:
+            # Kubernetes populates HOSTNAME with the Pod name. Next.js standalone
+            # otherwise binds to that Pod IP only, which breaks localhost-based
+            # port-forwarding and makes the listener unnecessarily specific.
+            - name: HOSTNAME
+              value: "0.0.0.0"
+            - name: MOONIN_LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-portal-ui.license.existingSecret is required" .Values.license.existingSecret | quote }}
+                  key: {{ required "moonin-portal-ui.license.key is required" .Values.license.key | quote }}
+            - name: API_BASE_URL
+              value: {{ .Values.env.api_base_url | quote }}
+            - name: ADMIN_URL
+              value: {{ .Values.env.admin_url | quote }}
+            - name: API_SCALING_BACKEND_URL
+              value: {{ .Values.env.api_scaling_backend_url | quote }}
+            - name: DEMO_EMAIL
+              value: {{ .Values.env.demo_email | quote }}
+            - name: AUTO_VERIFY_EMAIL_ON_SIGNUP
+              value: {{ .Values.env.auto_verify_email_on_signup | quote }}
+            - name: INGESTION_QUERY_API_BASE_URL
+              value: {{ .Values.env.ingestion_query_api_base_url | quote }}
+            - name: INGESTION_QUERY_API_INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env.ingestion_query_api_internal_token_secret.name }}
+                  key: {{ .Values.env.ingestion_query_api_internal_token_secret.key }}
+                optional: true
+            - name: PORTAL_MCP_DELEGATION_ENABLED
+              value: {{ .Values.env.portal_mcp_delegation_enabled | quote }}
+            - name: MCP_INTERNAL_URL
+              value: {{ .Values.env.mcp_internal_url | quote }}
+            - name: MCP_DELEGATION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env.mcp_delegation_secret.name }}
+                  key: {{ .Values.env.mcp_delegation_secret.key }}
+            - name: CHATBOT_API_URL
+              value: {{ .Values.env.chatbot_api_url | quote }}
+            - name: CHATBOT_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env.chatbot_api_secret.name }}
+                  key: {{ .Values.env.chatbot_api_secret.key }}
+          startupProbe:
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

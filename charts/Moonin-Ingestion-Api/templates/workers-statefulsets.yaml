@@ -1,0 +1,133 @@
+{{- if .Values.workers.enabled }}
+{{- $root := . }}
+{{- range $workerType := list "metrics" "events" "traces" }}
+{{- $pool := index $root.Values.workers.pool $workerType }}
+{{- $workerName := printf "%s-ingestion-worker-%s" $root.Release.Name $workerType | trunc 63 | trimSuffix "-" }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $workerName }}
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    helm.sh/chart: {{ include "moonin-ingestion-api.chart" $root }}
+    app.kubernetes.io/name: arguz-ingestion-worker
+    app.kubernetes.io/instance: {{ $root.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $root.Release.Service }}
+    app.kubernetes.io/component: ingestion-worker
+    arguz.io/worker-type: {{ $workerType }}
+spec:
+  replicas: {{ $pool.replicas }}
+  podManagementPolicy: Parallel
+  serviceName: {{ $workerName }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: arguz-ingestion-worker
+      app.kubernetes.io/instance: {{ $root.Release.Name }}
+      app.kubernetes.io/component: ingestion-worker
+      arguz.io/worker-type: {{ $workerType }}
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: {{ include "moonin-ingestion-api.chart" $root }}
+        app.kubernetes.io/name: arguz-ingestion-worker
+        app.kubernetes.io/instance: {{ $root.Release.Name }}
+        app.kubernetes.io/managed-by: {{ $root.Release.Service }}
+        app.kubernetes.io/component: ingestion-worker
+        arguz.io/worker-type: {{ $workerType }}
+    spec:
+      serviceAccountName: {{ include "moonin-ingestion-api.workerServiceAccountName" $root }}
+      automountServiceAccountToken: true
+      {{- with $root.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $root.Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: arguz-ingestion-worker
+                  app.kubernetes.io/instance: {{ $root.Release.Name }}
+                  app.kubernetes.io/component: ingestion-worker
+                  arguz.io/worker-type: {{ $workerType }}
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: ingestion-worker
+          image: "{{ $root.Values.workers.image.repository }}:{{ $root.Values.workers.image.tag }}"
+          imagePullPolicy: {{ $root.Values.workers.image.pullPolicy }}
+          {{- with $root.Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: MOONIN_LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-ingestion-api.license.existingSecret is required" $root.Values.license.existingSecret | quote }}
+                  key: {{ required "moonin-ingestion-api.license.key is required" $root.Values.license.key | quote }}
+            - name: WORKER_TYPE
+              value: {{ $workerType | quote }}
+            - name: NATS_URL
+              value: {{ $root.Values.env.natsUrl | quote }}
+            - name: NATS_SUBJECT_ENV
+              value: {{ $root.Values.env.natsSubjectEnv | quote }}
+            - name: NATS_QUEUE_GROUP
+              value: {{ printf "%s-%s" $root.Values.workers.queueGroupPrefix $workerType | quote }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $root.Values.databaseSecret.name }}
+                  key: {{ $root.Values.databaseSecret.key }}
+            - name: BQ_PROJECT_ID
+              value: {{ $root.Values.workers.bqProjectId | quote }}
+            - name: BQ_LOCATION
+              value: {{ $root.Values.workers.bqLocation | quote }}
+            - name: WORKER_LEASE_DURATION
+              value: {{ $root.Values.workers.leaseDuration | quote }}
+            - name: WORKER_HEARTBEAT_INTERVAL
+              value: {{ $root.Values.workers.heartbeatInterval | quote }}
+            - name: WORKER_LEASE_SWEEP_INTERVAL
+              value: {{ $root.Values.workers.leaseSweepInterval | quote }}
+            - name: BQ_TABLE_ENSURE_TTL
+              value: {{ $root.Values.workers.tableEnsureTtl | quote }}
+            - name: PAYLOAD_ZSTD_LEVEL
+              value: {{ $root.Values.workers.payloadZstdLevel | quote }}
+            - name: DOWNSTREAM_ORG_CACHE_TTL
+              value: {{ $root.Values.workers.downstreamOrgCacheTtl | quote }}
+            - name: DOWNSTREAM_ORG_CACHE_MAX
+              value: {{ $root.Values.workers.downstreamOrgCacheMax | quote }}
+            - name: JETSTREAM_ENABLED
+              value: {{ $root.Values.workers.jetstream.enabled | quote }}
+            - name: JETSTREAM_STREAM_NAME
+              value: {{ $root.Values.workers.jetstream.streamName | quote }}
+            - name: JETSTREAM_SUBJECT_PATTERN
+              value: {{ $root.Values.workers.jetstream.subjectPattern | quote }}
+            - name: JETSTREAM_ACK_WAIT
+              value: {{ $root.Values.workers.jetstream.ackWait | quote }}
+            - name: JETSTREAM_MAX_DELIVER
+              value: {{ $root.Values.workers.jetstream.maxDeliver | quote }}
+            - name: JETSTREAM_MAX_AGE
+              value: {{ $root.Values.workers.jetstream.maxAge | quote }}
+            - name: JETSTREAM_REPLICAS
+              value: {{ $root.Values.workers.jetstream.replicas | quote }}
+            - name: JETSTREAM_MAX_BYTES
+              value: {{ $root.Values.workers.jetstream.maxBytes | quote }}
+            - name: JETSTREAM_FETCH_BATCH
+              value: {{ $root.Values.workers.jetstream.fetchBatch | quote }}
+            - name: JETSTREAM_FETCH_MAX_WAIT
+              value: {{ $root.Values.workers.jetstream.fetchMaxWait | quote }}
+            - name: JETSTREAM_NAK_DELAY
+              value: {{ $root.Values.workers.jetstream.nakDelay | quote }}
+            - name: BQ_STORAGE_WRITE_POOL_SIZE
+              value: {{ $root.Values.workers.bqStorageWritePoolSize | default "8" | quote }}
+            - name: BQ_WRITE_CONCURRENCY
+              value: {{ $root.Values.workers.bqWriteConcurrency | default "16" | quote }}
+          resources:
+            {{- toYaml $pool.resources | nindent 12 }}
+{{- end }}
+{{- end }}

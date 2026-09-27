@@ -1,0 +1,8 @@
+replicaCount: 1
+image:
+  repository: us-central1-docker.pkg.dev/arguz-prod/moonin/moonin-chatbot-api
+  tag: "20260901111351"
+mcpInternalUrl: "http://moonin-platform-moonin-mcp-server.arguz.svc.cluster.local:8080"
+license:
+  existingSecret: moonin-license
+  key: MOONIN_LICENSE

@@ -1,0 +1,109 @@
+{{- if .Values.queryApi.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "moonin-ingestion-api.queryFullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "moonin-ingestion-api.queryLabels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "moonin-ingestion-api.querySelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "moonin-ingestion-api.queryLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "moonin-ingestion-api.queryServiceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.queryApi.serviceAccount.automount }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: arguz-ingestion-query-api
+          image: "{{ .Values.queryApi.image.repository }}:{{ .Values.queryApi.image.tag }}"
+          imagePullPolicy: {{ .Values.queryApi.image.pullPolicy }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 8082
+              protocol: TCP
+          env:
+            - name: MOONIN_LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-ingestion-api.license.existingSecret is required" .Values.license.existingSecret | quote }}
+                  key: {{ required "moonin-ingestion-api.license.key is required" .Values.license.key | quote }}
+            - name: QUERY_API_INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "moonin-ingestion-api.queryFullname" . }}-auth
+                  key: internal-token
+            - name: QUERY_API_INTERNAL_TOKEN_HEADER
+              value: {{ .Values.queryApi.env.internalTokenHeader | quote }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.databaseSecret.name }}
+                  key: {{ .Values.databaseSecret.key }}
+            - name: QUERY_API_LISTEN_ADDR
+              value: {{ .Values.queryApi.env.listenAddr | quote }}
+            - name: BQ_PROJECT_ID
+              value: {{ .Values.queryApi.env.bqProjectId | quote }}
+            - name: BQ_LOCATION
+              value: {{ .Values.queryApi.env.bqLocation | quote }}
+            - name: QUERY_PAGE_CACHE_TTL
+              value: {{ .Values.queryApi.env.pageCacheTtl | quote }}
+            - name: QUERY_PAGE_CACHE_MAX
+              value: {{ .Values.queryApi.env.pageCacheMax | quote }}
+            - name: QUERY_CLUSTER_CONFIG_CACHE_TTL
+              value: {{ .Values.queryApi.env.clusterConfigCacheTtl | quote }}
+            - name: QUERY_CLUSTER_CONFIG_CACHE_MAX
+              value: {{ .Values.queryApi.env.clusterConfigCacheMax | quote }}
+            - name: QUERY_CACHE_REDIS_ENABLED
+              value: {{ .Values.queryApi.env.redisEnabled | quote }}
+            - name: QUERY_CACHE_REDIS_ADDR
+              value: {{ .Values.queryApi.env.redisAddr | quote }}
+            - name: QUERY_CACHE_REDIS_PASSWORD
+              value: {{ .Values.queryApi.env.redisPassword | quote }}
+            - name: QUERY_CACHE_REDIS_DB
+              value: {{ .Values.queryApi.env.redisDb | quote }}
+            - name: QUERY_CACHE_REDIS_PREFIX
+              value: {{ .Values.queryApi.env.redisPrefix | quote }}
+            - name: QUERY_CACHE_REDIS_TIMEOUT
+              value: {{ .Values.queryApi.env.redisTimeout | quote }}
+          {{- with .Values.queryApi.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.queryApi.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.queryApi.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

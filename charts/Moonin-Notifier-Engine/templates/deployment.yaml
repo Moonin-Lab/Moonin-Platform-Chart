@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "moonin-notifier-engine.fullname" . }}
+  labels:
+    {{- include "moonin-notifier-engine.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "moonin-notifier-engine.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "moonin-notifier-engine.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "moonin-notifier-engine.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["run-worker", "--interval-secs", "5"]
+          env:
+            # DATABASE_URL is the only required sensitive runtime setting.
+            # It is managed by Moonin Installer in db-secret, never copied to
+            # a component-specific Secret.
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-notifier-engine.databaseSecret.existingSecret is required" .Values.databaseSecret.existingSecret | quote }}
+                  key: {{ required "moonin-notifier-engine.databaseSecret.key is required" .Values.databaseSecret.key | quote }}
+            - name: MOONIN_LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-notifier-engine.license.existingSecret is required" .Values.license.existingSecret | quote }}
+                  key: {{ required "moonin-notifier-engine.license.key is required" .Values.license.key | quote }}
+            - name: APP_BASE_URL
+              value: {{ required "moonin-notifier-engine.config.appBaseURL is required" .Values.config.appBaseURL | quote }}
+            - name: PORTAL_BASE_URL
+              value: {{ required "moonin-notifier-engine.config.portalBaseURL is required" .Values.config.portalBaseURL | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.config.logLevel | quote }}
+            - name: ENGINE_INTERVAL_SECS
+              value: {{ .Values.config.engineIntervalSeconds | quote }}
+            - name: ENGINE_WINDOW_SECS
+              value: {{ .Values.config.engineWindowSeconds | quote }}
+            - name: ENGINE_THROTTLE_MINUTES
+              value: {{ .Values.config.engineThrottleMinutes | quote }}
+            - name: DELIVERY_BATCH
+              value: {{ .Values.config.deliveryBatch | quote }}
+            - name: MAX_SEND_ATTEMPTS
+              value: {{ .Values.config.maxSendAttempts | quote }}
+            - name: HTTP_TIMEOUT_SECS
+              value: {{ .Values.config.httpTimeoutSeconds | quote }}
+            - name: CLAIM_LEASE_SECS
+              value: {{ .Values.config.claimLeaseSeconds | quote }}
+            - name: TELEMETRY_ALERTS_ENABLED
+              value: {{ .Values.config.telemetryAlertsEnabled | quote }}
+            - name: JETSTREAM_ENABLED
+              value: {{ .Values.config.jetStreamEnabled | quote }}
+            - name: JETSTREAM_ACK_WAIT
+              value: {{ .Values.config.jetStreamAckWaitSeconds | quote }}
+            - name: JETSTREAM_MAX_DELIVER
+              value: {{ .Values.config.jetStreamMaxDeliver | quote }}
+            - name: NATS_URL
+              value: {{ .Values.config.natsURL | quote }}
+            - name: NATS_SUBJECT_ENV
+              value: {{ .Values.config.natsSubjectEnv | quote }}
+            - name: REDIS_ENABLED
+              value: {{ .Values.redis.enabled | quote }}
+            {{- if .Values.redis.enabled }}
+            - name: REDIS_ADDR
+              value: "{{ include "moonin-notifier-engine.redisFullname" . }}:{{ .Values.redis.port }}"
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

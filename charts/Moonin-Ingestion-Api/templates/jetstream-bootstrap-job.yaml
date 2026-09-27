@@ -1,0 +1,99 @@
+{{- if and .Values.workers.enabled .Values.workers.jetstream.enabled .Values.jetstreamBootstrap.enabled }}
+{{- $bootstrapSaName := printf "%s-jetstream-bootstrap" (include "moonin-ingestion-api.fullname" .) }}
+{{- if .Values.workers.serviceAccount.create }}
+{{- $bootstrapSaName = include "moonin-ingestion-api.workerServiceAccountName" . }}
+{{- end }}
+{{- if not .Values.workers.serviceAccount.create }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $bootstrapSaName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "moonin-ingestion-api.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ingestion-worker
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+  {{- with .Values.workers.serviceAccount.annotations }}
+  {{- if . }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- else }}
+  {{- end }}
+{{- end }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "moonin-ingestion-api.fullname" . }}-jetstream-bootstrap
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "moonin-ingestion-api.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ingestion-worker
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.jetstreamBootstrap.backoffLimit }}
+  ttlSecondsAfterFinished: {{ .Values.jetstreamBootstrap.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      labels:
+        {{- include "moonin-ingestion-api.labels" . | nindent 8 }}
+        app.kubernetes.io/component: ingestion-worker
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ $bootstrapSaName }}
+      automountServiceAccountToken: true
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: jetstream-bootstrap
+          image: "{{ .Values.workers.image.repository }}:{{ .Values.workers.image.tag }}"
+          imagePullPolicy: {{ .Values.workers.image.pullPolicy }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          command: ["/ingestion-worker", "bootstrap-jetstream"]
+          env:
+            - name: MOONIN_LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-ingestion-api.license.existingSecret is required" .Values.license.existingSecret | quote }}
+                  key: {{ required "moonin-ingestion-api.license.key is required" .Values.license.key | quote }}
+            - name: NATS_URL
+              value: {{ .Values.env.natsUrl | quote }}
+            - name: NATS_SUBJECT_ENV
+              value: {{ .Values.env.natsSubjectEnv | quote }}
+            - name: JETSTREAM_ENABLED
+              value: "true"
+            - name: JETSTREAM_STREAM_NAME
+              value: {{ .Values.workers.jetstream.streamName | quote }}
+            - name: JETSTREAM_SUBJECT_PATTERN
+              value: {{ .Values.workers.jetstream.subjectPattern | quote }}
+            - name: JETSTREAM_ACK_WAIT
+              value: {{ .Values.workers.jetstream.ackWait | quote }}
+            - name: JETSTREAM_MAX_DELIVER
+              value: {{ .Values.workers.jetstream.maxDeliver | quote }}
+            - name: JETSTREAM_MAX_AGE
+              value: {{ .Values.workers.jetstream.maxAge | quote }}
+            - name: JETSTREAM_REPLICAS
+              value: {{ .Values.workers.jetstream.replicas | quote }}
+            - name: JETSTREAM_MAX_BYTES
+              value: {{ .Values.workers.jetstream.maxBytes | quote }}
+            - name: JETSTREAM_FETCH_BATCH
+              value: {{ .Values.workers.jetstream.fetchBatch | quote }}
+            - name: JETSTREAM_FETCH_MAX_WAIT
+              value: {{ .Values.workers.jetstream.fetchMaxWait | quote }}
+            - name: JETSTREAM_NAK_DELAY
+              value: {{ .Values.workers.jetstream.nakDelay | quote }}
+{{- end }}

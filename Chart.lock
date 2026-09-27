@@ -1,0 +1,33 @@
+dependencies:
+- name: moonin-api
+  repository: ""
+  version: '>=0.1.0'
+- name: moonin-scaling-rules-api
+  repository: ""
+  version: '>=0.1.0'
+- name: moonin-portal-ui
+  repository: ""
+  version: '>=0.1.0'
+- name: moonin-admin-ui
+  repository: ""
+  version: '>=0.1.0'
+- name: moonin-notifier-engine
+  repository: ""
+  version: '>=0.1.0'
+- name: moonin-mcp-server
+  repository: ""
+  version: '>=0.1.0'
+- name: moonin-chatbot-api
+  repository: ""
+  version: '>=0.1.0'
+- name: moonin-billing-sync
+  repository: ""
+  version: '>=0.1.0'
+- name: moonin-ai-sync
+  repository: ""
+  version: '>=0.1.0'
+- name: moonin-ingestion-api
+  repository: ""
+  version: '>=0.1.0'
+digest: sha256:5de92844633755598d1123e30aaaab1aa3c0c8e8c2a5b4c9b3e141449c67c507
+generated: "2026-09-01T13:27:37.360073-04:00"

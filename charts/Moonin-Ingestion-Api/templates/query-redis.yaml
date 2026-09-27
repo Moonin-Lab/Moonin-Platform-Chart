@@ -1,0 +1,93 @@
+{{- if and .Values.queryApi.enabled .Values.queryApi.redis.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "moonin-ingestion-api.queryRedisFullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "moonin-ingestion-api.queryLabels" . | nindent 4 }}
+data:
+  redis.conf: |
+    bind 0.0.0.0
+    protected-mode no
+    port {{ .Values.queryApi.redis.port }}
+    appendonly no
+    save ""
+    maxmemory {{ .Values.queryApi.redis.maxmemory }}
+    maxmemory-policy {{ .Values.queryApi.redis.maxmemoryPolicy }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "moonin-ingestion-api.queryRedisFullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "moonin-ingestion-api.queryLabels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "moonin-ingestion-api.queryRedisFullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: query-api-redis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "moonin-ingestion-api.queryRedisFullname" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: query-api-redis
+    spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: redis
+          image: {{ .Values.queryApi.redis.image | quote }}
+          imagePullPolicy: IfNotPresent
+          args:
+            - redis-server
+            - /usr/local/etc/redis/redis.conf
+          ports:
+            - name: redis
+              containerPort: {{ .Values.queryApi.redis.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: redis-config
+              mountPath: /usr/local/etc/redis
+          resources:
+            {{- toYaml .Values.queryApi.redis.resources | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: redis-config
+          configMap:
+            name: {{ include "moonin-ingestion-api.queryRedisFullname" . }}-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "moonin-ingestion-api.queryRedisFullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "moonin-ingestion-api.queryLabels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{ include "moonin-ingestion-api.queryRedisFullname" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: query-api-redis
+  ports:
+    - name: redis
+      port: {{ .Values.queryApi.redis.port }}
+      targetPort: redis
+      protocol: TCP
+{{- end }}

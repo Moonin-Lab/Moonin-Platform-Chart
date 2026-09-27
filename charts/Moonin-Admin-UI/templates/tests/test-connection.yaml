@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "moonin-admin-ui.fullname" . }}-test-connection"
+  labels:
+    {{- include "moonin-admin-ui.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "moonin-admin-ui.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
