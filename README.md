@@ -33,7 +33,7 @@ The chart's defaults are in [`values.yaml`](values.yaml). Provide environment-
 specific overrides in a separate values file:
 
 ```sh
-helm upgrade --install moonin-platform oci://ghcr.io/moonin-lab/moonin-platform --version 0.1.0 --namespace arguz --create-namespace --values production-values.yaml
+helm upgrade --install moonin-platform oci://ghcr.io/moonin-lab/moonin-platform --version 0.1.1 --namespace arguz --create-namespace --values production-values.yaml
 ```
 
 The publishing workflow updates the chart version and the OCI install commands
