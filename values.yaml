@@ -569,7 +569,7 @@ moonin-ingestion-api:
     image:
       repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-worker
       pullPolicy: IfNotPresent
-      tag: "20260928-121901"
+      tag: "20260928-143939"
 
   clickhouse:
     # Create this Secret before deployment. It contains CLICKHOUSE_DSN.
@@ -584,6 +584,8 @@ moonin-ingestion-api:
 
   bootstrapClickHouse:
     enabled: true
+    backoffLimit: 1
+    ttlSecondsAfterFinished: 300
 
   queryApi:
     enabled: true

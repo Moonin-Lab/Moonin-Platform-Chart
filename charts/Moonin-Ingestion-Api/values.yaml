@@ -70,6 +70,14 @@ clickhouse:
   asyncInsert: true
   waitForAsyncInsert: true
 
+# Runs before the application resources to create the Moonin ClickHouse
+# database and tables. Keep failures available briefly for diagnostics, but do
+# not leave repeated failed Pods indefinitely in the namespace.
+bootstrapClickHouse:
+  enabled: false
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 300
+
 jetstreamBootstrap:
   enabled: false
   backoffLimit: 3
