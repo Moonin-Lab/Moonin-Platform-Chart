@@ -22,7 +22,10 @@ workers:
     ackWait: 120s
     maxDeliver: 20
     maxAge: 168h
-    maxBytes: 400Gi
+    # Must remain below the NATS JetStream max_file_store of every replica.
+    # The parent Moonin Platform chart may further tune this for its NATS
+    # capacity; this standalone-safe default matches a 50Gi file store.
+    maxBytes: 40Gi
     replicas: 3
     fetchBatch: 300
     fetchMaxWait: 3s
@@ -80,7 +83,7 @@ bootstrapClickHouse:
 
 jetstreamBootstrap:
   enabled: false
-  backoffLimit: 3
+  backoffLimit: 1
   ttlSecondsAfterFinished: 300
 
 queryApi:

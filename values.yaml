@@ -554,7 +554,11 @@ moonin-ingestion-api:
     jetstream:
       subjectPattern: ingestion.v2.*.*.lane.*
       maxAge: 168h
-      maxBytes: 400Gi
+      # This must fit in JetStream's max_file_store on every NATS replica.
+      # Moonin Installer provisions 50Gi by default, so reserve headroom for
+      # stream metadata and temporary recovery files instead of requesting it
+      # all for the ingestion stream.
+      maxBytes: 40Gi
       replicas: 3
     pool:
       metrics:
@@ -604,6 +608,9 @@ moonin-ingestion-api:
 
   jetstreamBootstrap:
     enabled: true
+    # One failed pre-install attempt is enough to surface a configuration
+    # problem. Helm's atomic rollback then keeps the cluster clean.
+    backoffLimit: 1
 
   ingress:
     enabled: true
