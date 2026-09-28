@@ -3,7 +3,7 @@ entries:
   moonin-platform:
   - apiVersion: v2
     appVersion: 0.1.2
-    created: "2026-09-28T16:14:09.595276413Z"
+    created: "2026-09-28T16:15:19.324988996Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -54,7 +54,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2026-09-28T16:14:09.592832733Z"
+    created: "2026-09-28T16:15:19.321481756Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -105,7 +105,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2026-09-28T16:14:09.590044131Z"
+    created: "2026-09-28T16:15:19.317224476Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -154,4 +154,4 @@ entries:
     urls:
     - https://Moonin-Lab.github.io/Moonin-Platform-Chart/moonin-platform-0.1.0.tgz
     version: 0.1.0
-generated: "2026-09-28T16:14:09.587597567Z"
+generated: "2026-09-28T16:15:19.31339839Z"
