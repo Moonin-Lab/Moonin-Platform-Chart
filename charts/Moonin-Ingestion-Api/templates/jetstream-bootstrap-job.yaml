@@ -1,9 +1,5 @@
 {{- if and .Values.workers.enabled .Values.workers.jetstream.enabled .Values.jetstreamBootstrap.enabled }}
 {{- $bootstrapSaName := printf "%s-jetstream-bootstrap" (include "moonin-ingestion-api.fullname" .) }}
-{{- if .Values.workers.serviceAccount.create }}
-{{- $bootstrapSaName = include "moonin-ingestion-api.workerServiceAccountName" . }}
-{{- end }}
-{{- if not .Values.workers.serviceAccount.create }}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -22,7 +18,6 @@ metadata:
   {{- end }}
   {{- else }}
   {{- end }}
-{{- end }}
 ---
 apiVersion: batch/v1
 kind: Job
