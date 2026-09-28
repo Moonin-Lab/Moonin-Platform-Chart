@@ -1,0 +1,45 @@
+{{- if and .Values.workers.enabled .Values.bootstrapClickHouse.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "moonin-ingestion-api.fullname" . }}-clickhouse-bootstrap
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-10"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.bootstrapClickHouse.backoffLimit }}
+  ttlSecondsAfterFinished: {{ .Values.bootstrapClickHouse.ttlSecondsAfterFinished }}
+  template:
+    spec:
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: clickhouse-bootstrap
+          image: "{{ .Values.workers.image.repository }}:{{ .Values.workers.image.tag }}"
+          imagePullPolicy: {{ .Values.workers.image.pullPolicy }}
+          command: ["/ingestion-worker", "bootstrap-clickhouse"]
+          env:
+            - name: MOONIN_LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-ingestion-api.license.existingSecret is required" .Values.license.existingSecret | quote }}
+                  key: {{ required "moonin-ingestion-api.license.key is required" .Values.license.key | quote }}
+            - name: CLICKHOUSE_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-ingestion-api.clickhouse.existingSecret is required" .Values.clickhouse.existingSecret | quote }}
+                  key: {{ .Values.clickhouse.dsnKey | quote }}
+            - name: CLICKHOUSE_DATABASE
+              value: {{ .Values.clickhouse.database | quote }}
+            - name: CLICKHOUSE_REPLICATION_PATH
+              value: {{ .Values.clickhouse.replicationPath | quote }}
+            - name: CLICKHOUSE_REPLICA_NAME
+              value: {{ .Values.clickhouse.replicaName | quote }}
+            - name: CLICKHOUSE_REQUIRE_REPLICATION
+              value: {{ .Values.clickhouse.requireReplication | quote }}
+{{- end }}

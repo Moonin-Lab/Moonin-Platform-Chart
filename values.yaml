@@ -535,7 +535,7 @@ moonin-ingestion-api:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-api
     pullPolicy: IfNotPresent
-    tag: "20260927-114317"
+    tag: "20260928-121901"
 
   api:
     enabled: true
@@ -550,10 +550,11 @@ moonin-ingestion-api:
 
   workers:
     enabled: true
-    bqProjectId: arguz-prod
+    clickhouseWriteConcurrency: 8
     jetstream:
-      maxAge: 1h
-      maxBytes: 40Gi
+      subjectPattern: ingestion.v2.*.*.lane.*
+      maxAge: 168h
+      maxBytes: 400Gi
       replicas: 3
     pool:
       metrics:
@@ -568,7 +569,21 @@ moonin-ingestion-api:
     image:
       repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-worker
       pullPolicy: IfNotPresent
-      tag: "20260927-114317"
+      tag: "20260928-121901"
+
+  clickhouse:
+    # Create this Secret before deployment. It contains CLICKHOUSE_DSN.
+    existingSecret: moonin-clickhouse-connection
+    dsnKey: CLICKHOUSE_DSN
+    database: moonin
+    replicationPath: /clickhouse/tables/{shard}
+    replicaName: "{replica}"
+    requireReplication: true
+    asyncInsert: true
+    waitForAsyncInsert: true
+
+  bootstrapClickHouse:
+    enabled: true
 
   queryApi:
     enabled: true
@@ -576,7 +591,6 @@ moonin-ingestion-api:
       create: false
       name: arguz-ingestion-query-api
     env:
-      bqProjectId: arguz-prod
       redisEnabled: "true"
       redisAddr: "moonin-platform-query-redis:6379"
     redis:
@@ -584,7 +598,7 @@ moonin-ingestion-api:
     image:
       repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-query-api
       pullPolicy: IfNotPresent
-      tag: "20260927-114317"
+      tag: "20260928-121901"
 
   jetstreamBootstrap:
     enabled: true

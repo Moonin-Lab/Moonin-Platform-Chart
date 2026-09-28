@@ -11,25 +11,18 @@ workers:
     pullPolicy: IfNotPresent
     tag: "0.1.0"
   queueGroupPrefix: ingestion-worker
-  bqProjectId: arguz-prod
-  bqLocation: us-central1
+  clickhouseWriteConcurrency: 8
   leaseDuration: 30s
   heartbeatInterval: 10s
   leaseSweepInterval: 10s
-  tableEnsureTtl: 15m
-  payloadZstdLevel: "3"
-  downstreamOrgCacheTtl: 10m
-  downstreamOrgCacheMax: "50000"
-  bqStorageWritePoolSize: "8"
-  bqWriteConcurrency: "16"
   jetstream:
     enabled: true
     streamName: INGESTION
-    subjectPattern: ingestion.v1.*.cluster.*.*
+    subjectPattern: ingestion.v2.*.*.lane.*
     ackWait: 120s
     maxDeliver: 20
-    maxAge: 1h
-    maxBytes: 40Gi
+    maxAge: 168h
+    maxBytes: 400Gi
     replicas: 3
     fetchBatch: 300
     fetchMaxWait: 3s
@@ -67,6 +60,16 @@ workers:
           cpu: 1000m
           memory: 2Gi
 
+clickhouse:
+  existingSecret: ""
+  dsnKey: CLICKHOUSE_DSN
+  database: moonin
+  replicationPath: /clickhouse/tables/{shard}
+  replicaName: "{replica}"
+  requireReplication: true
+  asyncInsert: true
+  waitForAsyncInsert: true
+
 jetstreamBootstrap:
   enabled: false
   backoffLimit: 3
@@ -89,8 +92,6 @@ queryApi:
   env:
     listenAddr: ":8082"
     internalTokenHeader: x-internal-token
-    bqProjectId: arguz-prod
-    bqLocation: us-central1
     pageCacheTtl: 60s
     pageCacheMax: "30000"
     clusterConfigCacheTtl: 300s

@@ -83,24 +83,31 @@ spec:
                 secretKeyRef:
                   name: {{ $root.Values.databaseSecret.name }}
                   key: {{ $root.Values.databaseSecret.key }}
-            - name: BQ_PROJECT_ID
-              value: {{ $root.Values.workers.bqProjectId | quote }}
-            - name: BQ_LOCATION
-              value: {{ $root.Values.workers.bqLocation | quote }}
+            - name: CLICKHOUSE_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-ingestion-api.clickhouse.existingSecret is required" $root.Values.clickhouse.existingSecret | quote }}
+                  key: {{ $root.Values.clickhouse.dsnKey | quote }}
+            - name: CLICKHOUSE_DATABASE
+              value: {{ $root.Values.clickhouse.database | quote }}
+            - name: CLICKHOUSE_REPLICATION_PATH
+              value: {{ $root.Values.clickhouse.replicationPath | quote }}
+            - name: CLICKHOUSE_REPLICA_NAME
+              value: {{ $root.Values.clickhouse.replicaName | quote }}
+            - name: CLICKHOUSE_REQUIRE_REPLICATION
+              value: {{ $root.Values.clickhouse.requireReplication | quote }}
+            - name: CLICKHOUSE_ASYNC_INSERT
+              value: {{ $root.Values.clickhouse.asyncInsert | quote }}
+            - name: CLICKHOUSE_WAIT_FOR_ASYNC_INSERT
+              value: {{ $root.Values.clickhouse.waitForAsyncInsert | quote }}
+            - name: CLICKHOUSE_WRITE_CONCURRENCY
+              value: {{ $root.Values.workers.clickhouseWriteConcurrency | quote }}
             - name: WORKER_LEASE_DURATION
               value: {{ $root.Values.workers.leaseDuration | quote }}
             - name: WORKER_HEARTBEAT_INTERVAL
               value: {{ $root.Values.workers.heartbeatInterval | quote }}
             - name: WORKER_LEASE_SWEEP_INTERVAL
               value: {{ $root.Values.workers.leaseSweepInterval | quote }}
-            - name: BQ_TABLE_ENSURE_TTL
-              value: {{ $root.Values.workers.tableEnsureTtl | quote }}
-            - name: PAYLOAD_ZSTD_LEVEL
-              value: {{ $root.Values.workers.payloadZstdLevel | quote }}
-            - name: DOWNSTREAM_ORG_CACHE_TTL
-              value: {{ $root.Values.workers.downstreamOrgCacheTtl | quote }}
-            - name: DOWNSTREAM_ORG_CACHE_MAX
-              value: {{ $root.Values.workers.downstreamOrgCacheMax | quote }}
             - name: JETSTREAM_ENABLED
               value: {{ $root.Values.workers.jetstream.enabled | quote }}
             - name: JETSTREAM_STREAM_NAME
@@ -123,10 +130,6 @@ spec:
               value: {{ $root.Values.workers.jetstream.fetchMaxWait | quote }}
             - name: JETSTREAM_NAK_DELAY
               value: {{ $root.Values.workers.jetstream.nakDelay | quote }}
-            - name: BQ_STORAGE_WRITE_POOL_SIZE
-              value: {{ $root.Values.workers.bqStorageWritePoolSize | default "8" | quote }}
-            - name: BQ_WRITE_CONCURRENCY
-              value: {{ $root.Values.workers.bqWriteConcurrency | default "16" | quote }}
           resources:
             {{- toYaml $pool.resources | nindent 12 }}
 {{- end }}
