@@ -53,14 +53,21 @@ moonin-api:
     annotations:
       traefik.ingress.kubernetes.io/router.entrypoints: websecure
     hosts:
-      - host: api-discover.moonin.app
+      # The primary control-plane API and the compatibility endpoint used by
+      # Discovery Agents both route to Moonin API.
+      - host: api.moonin.app
+        paths:
+          - path: /
+            pathType: Prefix
+      - host: api-discovery.moonin.app
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: moonin-app-tls
         hosts:
-          - api-discover.moonin.app
+          - api.moonin.app
+          - api-discovery.moonin.app
 
   resources:
     limits:
@@ -618,14 +625,14 @@ moonin-ingestion-api:
     annotations:
       traefik.ingress.kubernetes.io/router.entrypoints: websecure
     hosts:
-      - host: ingestion-api.moonin.app
+      - host: api-ingestion.moonin.app
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: moonin-app-tls
         hosts:
-          - ingestion-api.moonin.app
+          - api-ingestion.moonin.app
 
 # Moonin Billing & AISync configuration
 moonin-billing-sync:
