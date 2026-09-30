@@ -53,12 +53,6 @@ moonin-api:
     annotations:
       traefik.ingress.kubernetes.io/router.entrypoints: websecure
     hosts:
-      # The primary control-plane API and the compatibility endpoint used by
-      # Discovery Agents both route to Moonin API.
-      - host: api.moonin.app
-        paths:
-          - path: /
-            pathType: Prefix
       - host: api-discovery.moonin.app
         paths:
           - path: /
@@ -66,7 +60,6 @@ moonin-api:
     tls:
       - secretName: moonin-app-tls
         hosts:
-          - api.moonin.app
           - api-discovery.moonin.app
 
   resources:
