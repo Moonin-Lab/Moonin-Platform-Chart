@@ -49,6 +49,10 @@ spec:
               value: {{ .Values.env.api_base_url | quote }}
             - name: APP_URL
               value: {{ .Values.env.app_url | quote }}
+            - name: MOONIN_AGENT_DISCOVERY_API_URL
+              value: {{ .Values.env.agent_discovery_api_url | quote }}
+            - name: MOONIN_AGENT_INGESTION_API_URL
+              value: {{ .Values.env.agent_ingestion_api_url | quote }}
             - name: DEMO_EMAIL
               value: {{ .Values.env.demo_email | quote }}
             - name: AUTO_VERIFY_EMAIL_ON_SIGNUP

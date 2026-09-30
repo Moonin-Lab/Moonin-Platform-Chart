@@ -288,7 +288,7 @@ moonin-admin-ui:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-admin-ui
     pullPolicy: IfNotPresent
-    tag: "20260927132724"
+    tag: "20260930205400"
 
   license:
     existingSecret: moonin-license
@@ -309,6 +309,11 @@ moonin-admin-ui:
   env:
     api_base_url: "http://moonin-platform-moonin-api.arguz.svc.cluster.local:4001"
     app_url: "https://portal.moonin.app"
+    # Filled by Moonin Installer from the selected public Ingress domain.
+    # Leave empty for a direct Helm deployment until external agent endpoints
+    # are known; Admin UI will then refuse to generate an unsafe command.
+    agent_discovery_api_url: ""
+    agent_ingestion_api_url: ""
     api_scaling_backend_url: "http://moonin-platform-moonin-scaling-rules-api.arguz.svc.cluster.local:3101"
     demo_email: "demo@moonin.app"
     auto_verify_email_on_signup: "true"
