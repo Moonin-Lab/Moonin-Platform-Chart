@@ -578,7 +578,9 @@ moonin-ingestion-api:
     image:
       repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-worker
       pullPolicy: IfNotPresent
-      tag: "20260928-143939"
+      # This image bootstraps through ClickHouse's built-in default database,
+      # so first deployment can create the Moonin analytics database safely.
+      tag: "20261002-234600"
 
   clickhouse:
     # Create this Secret before deployment. It contains CLICKHOUSE_DSN.
