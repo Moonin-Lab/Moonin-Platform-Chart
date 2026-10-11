@@ -2,7 +2,7 @@
 
 > A Helm chart for deploying Moonin Platform on Kubernetes.
 
-Chart version: 0.1.11
+Chart version: 0.1.12
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ Chart version: 0.1.11
 ## Install from GHCR
 
 ```sh
-helm upgrade --install moonin-platform oci://ghcr.io/moonin-lab/moonin-platform --version 0.1.11 --namespace arguz --create-namespace
+helm upgrade --install moonin-platform oci://ghcr.io/moonin-lab/moonin-platform --version 0.1.12 --namespace arguz --create-namespace
 ```
 
 ## Install from GitHub Pages

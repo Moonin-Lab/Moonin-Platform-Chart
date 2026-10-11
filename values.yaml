@@ -615,7 +615,7 @@ moonin-ingestion-api:
     image:
       repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-query-api
       pullPolicy: IfNotPresent
-      tag: "20261011-trace-detail"
+      tag: "20261011-trace-detail-logs"
 
   jetstreamBootstrap:
     enabled: true
