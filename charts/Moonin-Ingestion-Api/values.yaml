@@ -6,6 +6,7 @@ api:
 
 workers:
   enabled: false
+  nodeSelector: {}
   image:
     repository: us-central1-docker.pkg.dev/arguz-prod/arguz/arguz-ingestion-worker
     pullPolicy: IfNotPresent

@@ -71,7 +71,7 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.env.ingestion_query_api_internal_token_secret.name }}
                   key: {{ .Values.env.ingestion_query_api_internal_token_secret.key }}
-                optional: true
+                  optional: true
             - name: PORTAL_MCP_DELEGATION_ENABLED
               value: {{ .Values.env.portal_mcp_delegation_enabled | quote }}
             - name: MCP_INTERNAL_URL

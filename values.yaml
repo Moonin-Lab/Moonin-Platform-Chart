@@ -7,6 +7,7 @@ moonin-chatbot-api:
   license:
     existingSecret: moonin-license
     key: MOONIN_LICENSE
+  nodeSelector: {}
 
 moonin-api:
   replicaCount: 1
@@ -553,8 +554,11 @@ moonin-ingestion-api:
     name: db-secret
     key: DATABASE_URL
 
+  nodeSelector: {}
+
   workers:
     enabled: true
+    nodeSelector: {}
     clickhouseWriteConcurrency: 8
     jetstream:
       subjectPattern: ingestion.v2.*.*.lane.*
@@ -611,7 +615,7 @@ moonin-ingestion-api:
     image:
       repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-query-api
       pullPolicy: IfNotPresent
-      tag: "20260928-121901"
+      tag: "20261011-trace-detail"
 
   jetstreamBootstrap:
     enabled: true

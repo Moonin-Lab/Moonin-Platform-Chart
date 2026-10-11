@@ -6,3 +6,4 @@ mcpInternalUrl: "http://moonin-platform-moonin-mcp-server.arguz.svc.cluster.loca
 license:
   existingSecret: moonin-license
   key: MOONIN_LICENSE
+nodeSelector: {}
