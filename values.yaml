@@ -175,7 +175,7 @@ moonin-portal-ui:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-portal-ui
     pullPolicy: IfNotPresent
-    tag: "20260926234857"
+    tag: "20261011-155558-trace-consistency"
 
   # Server-side Portal authentication configuration. Create it with:
   # moonin-installer platform install
@@ -541,7 +541,7 @@ moonin-ingestion-api:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-api
     pullPolicy: IfNotPresent
-    tag: "20261004-jetstream-fix"
+    tag: "20261011-155558-trace-consistency"
 
   api:
     enabled: true
@@ -584,7 +584,7 @@ moonin-ingestion-api:
       pullPolicy: IfNotPresent
       # This image bootstraps through ClickHouse's built-in default database,
       # so first deployment can create the Moonin analytics database safely.
-      tag: "20261002-234600"
+      tag: "20261011-155558-trace-consistency"
 
   clickhouse:
     # Create this Secret before deployment. It contains CLICKHOUSE_DSN.
@@ -615,7 +615,7 @@ moonin-ingestion-api:
     image:
       repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-query-api
       pullPolicy: IfNotPresent
-      tag: "20261011-trace-detail-logs"
+      tag: "20261011-155558-trace-consistency"
 
   jetstreamBootstrap:
     enabled: true
