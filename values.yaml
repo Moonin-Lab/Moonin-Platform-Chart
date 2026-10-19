@@ -175,7 +175,7 @@ moonin-portal-ui:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-portal-ui
     pullPolicy: IfNotPresent
-    tag: "20261019-license-capacity"
+    tag: "20261019-cognito-demo-mfa"
 
   # Server-side Portal authentication configuration. Create it with:
   # moonin-installer platform install
@@ -289,7 +289,7 @@ moonin-admin-ui:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-admin-ui
     pullPolicy: IfNotPresent
-    tag: "20261019-license-capacity"
+    tag: "20261019-cognito-demo-mfa"
 
   license:
     existingSecret: moonin-license
