@@ -14,7 +14,7 @@ moonin-api:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-api
     pullPolicy: IfNotPresent
-    tag: "20261019-license-capacity"
+    tag: "20261019-license-capacity-multiarch"
 
   # Moonin API validates this signed license before starting. Kubernetes Secrets
   # are namespace-scoped: create this Secret in the namespace where this Helm
