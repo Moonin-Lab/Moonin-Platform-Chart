@@ -14,7 +14,7 @@ moonin-api:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-api
     pullPolicy: IfNotPresent
-    tag: "20260926201303"
+    tag: "20261019-license-capacity"
 
   # Moonin API validates this signed license before starting. Kubernetes Secrets
   # are namespace-scoped: create this Secret in the namespace where this Helm
@@ -175,7 +175,7 @@ moonin-portal-ui:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-portal-ui
     pullPolicy: IfNotPresent
-    tag: "20261011-155558-trace-consistency"
+    tag: "20261019-license-capacity"
 
   # Server-side Portal authentication configuration. Create it with:
   # moonin-installer platform install
@@ -289,7 +289,7 @@ moonin-admin-ui:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-admin-ui
     pullPolicy: IfNotPresent
-    tag: "20260930205400"
+    tag: "20261019-license-capacity"
 
   license:
     existingSecret: moonin-license
@@ -303,13 +303,13 @@ moonin-admin-ui:
   serviceAccount:
     create: true
     automount: true
+    name: moonin-admin-ui
     annotations:
       iam.gke.io/gcp-service-account: arguz-admin-prod@arguz-prod.iam.gserviceaccount.com
-    name: ""
 
   env:
     api_base_url: "http://moonin-platform-moonin-api.arguz.svc.cluster.local:4001"
-    app_url: "https://portal.moonin.app"
+    app_url: "https://admin.moonin.app"
     # Filled by Moonin Installer from the selected public Ingress domain.
     # Leave empty for a direct Helm deployment until external agent endpoints
     # are known; Admin UI will then refuse to generate an unsafe command.
