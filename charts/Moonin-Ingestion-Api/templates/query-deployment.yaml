@@ -44,6 +44,13 @@ spec:
                 secretKeyRef:
                   name: {{ required "moonin-ingestion-api.license.existingSecret is required" .Values.license.existingSecret | quote }}
                   key: {{ required "moonin-ingestion-api.license.key is required" .Values.license.key | quote }}
+            - name: MOONIN_API_INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-ingestion-api.license.existingSecret is required" .Values.license.existingSecret | quote }}
+                  key: {{ required "moonin-ingestion-api.license.internalTokenKey is required" .Values.license.internalTokenKey | quote }}
+            - name: MOONIN_API_INTERNAL_BASE_URL
+              value: {{ default (printf "http://%s-moonin-api.%s.svc.cluster.local:4001" .Release.Name .Release.Namespace) .Values.env.mooninApiInternalBaseUrl | quote }}
             - name: QUERY_API_INTERNAL_TOKEN
               valueFrom:
                 secretKeyRef:

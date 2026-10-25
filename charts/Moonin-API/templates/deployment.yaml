@@ -54,6 +54,11 @@ spec:
                 secretKeyRef:
                   name: {{ required "moonin-api.license.existingSecret is required" .Values.license.existingSecret | quote }}
                   key: {{ required "moonin-api.license.key is required" .Values.license.key | quote }}
+            - name: MOONIN_API_INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-api.license.existingSecret is required" .Values.license.existingSecret | quote }}
+                  key: {{ required "moonin-api.license.internalTokenKey is required" .Values.license.internalTokenKey | quote }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

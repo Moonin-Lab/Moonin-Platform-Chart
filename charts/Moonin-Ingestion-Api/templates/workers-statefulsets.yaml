@@ -74,6 +74,13 @@ spec:
                 secretKeyRef:
                   name: {{ required "moonin-ingestion-api.license.existingSecret is required" $root.Values.license.existingSecret | quote }}
                   key: {{ required "moonin-ingestion-api.license.key is required" $root.Values.license.key | quote }}
+            - name: MOONIN_API_INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-ingestion-api.license.existingSecret is required" $root.Values.license.existingSecret | quote }}
+                  key: {{ required "moonin-ingestion-api.license.internalTokenKey is required" $root.Values.license.internalTokenKey | quote }}
+            - name: MOONIN_API_INTERNAL_BASE_URL
+              value: {{ default (printf "http://%s-moonin-api.%s.svc.cluster.local:4001" $root.Release.Name $root.Release.Namespace) $root.Values.env.mooninApiInternalBaseUrl | quote }}
             - name: WORKER_TYPE
               value: {{ $workerType | quote }}
             - name: NATS_URL

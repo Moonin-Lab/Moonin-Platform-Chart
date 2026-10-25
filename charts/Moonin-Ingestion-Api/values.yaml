@@ -192,10 +192,12 @@ databaseSecret:
 license:
   existingSecret: moonin-license
   key: MOONIN_LICENSE
+  internalTokenKey: MOONIN_API_INTERNAL_TOKEN
 
 env:
   natsUrl: nats://nats.nats.svc.cluster.local:4222
   natsSubjectEnv: production
+  mooninApiInternalBaseUrl: ""
   clusterAuthCacheTtlSeconds: "60"
   clusterAuthCacheMax: "10000"
 

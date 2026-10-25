@@ -7,6 +7,7 @@ moonin-chatbot-api:
   license:
     existingSecret: moonin-license
     key: MOONIN_LICENSE
+    internalTokenKey: MOONIN_API_INTERNAL_TOKEN
   nodeSelector: {}
 
 moonin-api:
@@ -14,7 +15,7 @@ moonin-api:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-api
     pullPolicy: IfNotPresent
-    tag: "20261019-license-capacity-multiarch"
+    tag: "20261024-runtime-security-arm64-1"
 
   # Moonin API validates this signed license before starting. Kubernetes Secrets
   # are namespace-scoped: create this Secret in the namespace where this Helm
@@ -22,6 +23,7 @@ moonin-api:
   license:
     existingSecret: moonin-license
     key: MOONIN_LICENSE
+    internalTokenKey: MOONIN_API_INTERNAL_TOKEN
 
   # Secret in the release namespace containing the PostgreSQL connection used
   # by Moonin API. The installer creates this as db-secret by default.
@@ -175,7 +177,7 @@ moonin-portal-ui:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-portal-ui
     pullPolicy: IfNotPresent
-    tag: "20261019-cognito-demo-mfa"
+    tag: "20261024-runtime-security-arm64-1"
 
   # Server-side Portal authentication configuration. Create it with:
   # moonin-installer platform install
@@ -187,6 +189,7 @@ moonin-portal-ui:
   license:
     existingSecret: moonin-license
     key: MOONIN_LICENSE
+    internalTokenKey: MOONIN_API_INTERNAL_TOKEN
 
   imagePullSecrets:
     - name: ghcr-secret
@@ -289,7 +292,7 @@ moonin-admin-ui:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-admin-ui
     pullPolicy: IfNotPresent
-    tag: "20261019-cognito-demo-mfa"
+    tag: "20261024-runtime-security-arm64-1"
 
   license:
     existingSecret: moonin-license
@@ -537,11 +540,14 @@ moonin-ingestion-api:
   license:
     existingSecret: moonin-license
     key: MOONIN_LICENSE
+    internalTokenKey: MOONIN_API_INTERNAL_TOKEN
+  env:
+    mooninApiInternalBaseUrl: ""
 
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-api
     pullPolicy: IfNotPresent
-    tag: "20261011-155558-trace-consistency"
+    tag: "20261024-runtime-security-2"
 
   api:
     enabled: true
@@ -584,7 +590,7 @@ moonin-ingestion-api:
       pullPolicy: IfNotPresent
       # This image bootstraps through ClickHouse's built-in default database,
       # so first deployment can create the Moonin analytics database safely.
-      tag: "20261011-155558-trace-consistency"
+      tag: "20261024-runtime-security-2"
 
   clickhouse:
     # Create this Secret before deployment. It contains CLICKHOUSE_DSN.
@@ -615,7 +621,7 @@ moonin-ingestion-api:
     image:
       repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-query-api
       pullPolicy: IfNotPresent
-      tag: "20261011-155558-trace-consistency"
+      tag: "20261024-runtime-security-2"
 
   jetstreamBootstrap:
     enabled: true

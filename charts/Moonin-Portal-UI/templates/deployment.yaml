@@ -54,6 +54,11 @@ spec:
                 secretKeyRef:
                   name: {{ required "moonin-portal-ui.license.existingSecret is required" .Values.license.existingSecret | quote }}
                   key: {{ required "moonin-portal-ui.license.key is required" .Values.license.key | quote }}
+            - name: MOONIN_API_INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "moonin-portal-ui.license.existingSecret is required" .Values.license.existingSecret | quote }}
+                  key: {{ required "moonin-portal-ui.license.internalTokenKey is required" .Values.license.internalTokenKey | quote }}
             - name: API_BASE_URL
               value: {{ .Values.env.api_base_url | quote }}
             - name: ADMIN_URL

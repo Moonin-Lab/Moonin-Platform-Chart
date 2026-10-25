@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "Moonin-API.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "Moonin-API.fullname" . }}:4000']
   restartPolicy: Never
