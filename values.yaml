@@ -621,7 +621,7 @@ moonin-ingestion-api:
     image:
       repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-query-api
       pullPolicy: IfNotPresent
-      tag: "20261029-downstreams-sql-diagnostics-arm64-1"
+      tag: "20261029-downstreams-sql-diagnostics-arm64-2"
 
   jetstreamBootstrap:
     enabled: true
