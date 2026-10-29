@@ -590,7 +590,7 @@ moonin-ingestion-api:
       pullPolicy: IfNotPresent
       # This image bootstraps through ClickHouse's built-in default database,
       # so first deployment can create the Moonin analytics database safely.
-      tag: "20261028-downstream-uuid-fix-arm64-1"
+      tag: "20261024-runtime-security-2"
 
   clickhouse:
     # Create this Secret before deployment. It contains CLICKHOUSE_DSN.
@@ -621,7 +621,7 @@ moonin-ingestion-api:
     image:
       repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-query-api
       pullPolicy: IfNotPresent
-      tag: "20261024-runtime-security-2"
+      tag: "20261028-downstream-uuid-fix-arm64-1"
 
   jetstreamBootstrap:
     enabled: true
