@@ -1,8 +1,7 @@
-1. The Arguz AI Sync CronJob has been deployed.
+1. The OpenAI-compatible AI Sync CronJob has been deployed.
 
    Schedule: {{ .Values.schedule }}
    Namespace: {{ .Values.namespace }}
-   Service Account: {{ .Values.serviceAccountName }}
 
-   The CronJob refreshes the Vertex AI token and endpoint URL for all organizations
-   with ai_provider = 'arguz-ai' via GKE Workload Identity.
+   Configuration Secret: {{ .Values.configSecret.existingSecret }}
+   The CronJob uses the OpenAI-compatible endpoint, model, and API key from this Secret.

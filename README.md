@@ -2,7 +2,7 @@
 
 > A Helm chart for deploying Moonin Platform on Kubernetes.
 
-Chart version: 0.1.31
+Chart version: 0.1.32
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ Chart version: 0.1.31
 ## Install from GHCR
 
 ```sh
-helm upgrade --install moonin-platform oci://ghcr.io/moonin-lab/moonin-platform --version 0.1.31 --namespace arguz --create-namespace
+helm upgrade --install moonin-platform oci://ghcr.io/moonin-lab/moonin-platform --version 0.1.32 --namespace arguz --create-namespace
 ```
 
 ## Install from GitHub Pages
@@ -33,7 +33,7 @@ The chart's defaults are in [`values.yaml`](values.yaml). Provide environment-
 specific overrides in a separate values file:
 
 ```sh
-helm upgrade --install moonin-platform oci://ghcr.io/moonin-lab/moonin-platform --version 0.1.31 --namespace arguz --create-namespace --values production-values.yaml
+helm upgrade --install moonin-platform oci://ghcr.io/moonin-lab/moonin-platform --version 0.1.32 --namespace arguz --create-namespace --values production-values.yaml
 ```
 
 The publishing workflow updates the chart version and the OCI install commands
@@ -41,15 +41,13 @@ when a version tag is released.
 
 ## AI Sync Configuration
 
-AI Sync remains a Helm-managed CronJob on the existing `*/30 * * * *`
-schedule. By default, `moonin-ai-sync.configSecret.existingSecret` is empty:
-the application uses legacy Vertex configuration and its existing ServiceAccount
-(`ai-sync`), without requiring a provider configuration Secret. In this mode,
-`moonin-ai-sync.aiModel` optionally sets `AI_MODEL`; an empty value leaves the
-application's default model unchanged.
+AI Sync is a Helm-managed CronJob on the existing `*/30 * * * *` schedule and
+requires one OpenAI-compatible endpoint for the installation. Vertex is not
+supported. The installer prompts for endpoint, model, and API key, then creates
+the required Kubernetes Secret before deploying the chart. The CronJob does not
+use a dedicated ServiceAccount or mount a Kubernetes service-account token.
 
-For an installer-configured OpenAI-compatible provider, reference only the name
-of the existing Secret:
+The chart references only the name of the existing Secret:
 
 ```yaml
 moonin-ai-sync:
@@ -62,18 +60,16 @@ The installer must provision that Secret before the job runs, in
 
 | Secret Key | Contract |
 | --- | --- |
-| `AI_SYNC_PROVIDER` | Provider identifier accepted by AI Sync. |
+| `AI_SYNC_PROVIDER` | Must be `openai-compatible`. |
 | `AI_SYNC_ENDPOINT` | OpenAI-compatible API endpoint. |
 | `AI_SYNC_API_KEY` | Provider credential. |
 | `AI_MODEL` | Model selected by the installer. |
 
 The chart imports the existing Secret through `envFrom.secretRef`; it does not
 create it, inspect its contents, or put provider credentials in Helm values or
-rendered manifests. Kubernetes requires the configured Secret to exist.
-`moonin-ai-sync.aiModel` is ignored in Secret mode, even if nonempty, so it cannot
-override the Secret's `AI_MODEL`. No provider variables are explicitly rendered.
-The existing database and license `secretKeyRef` entries, ServiceAccount, job
-policy, and schedule are unchanged. Keep this dedicated provider Secret limited
+rendered manifests. The chart schema requires a non-empty Secret reference, and
+Kubernetes requires that Secret to exist before the CronJob can start. The
+service-account token is not mounted. Keep this dedicated provider Secret limited
 to the four keys above; it is not a replacement for database or license Secrets.
 
 Run the focused render and lint regression tests (Helm and Ruby required):

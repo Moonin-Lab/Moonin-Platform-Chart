@@ -702,9 +702,6 @@ moonin-ai-sync:
   # namespace-scoped, so this must match the Platform release namespace.
   namespace: moonin
 
-  # Optional pre-created Kubernetes ServiceAccount for cloud workload identity.
-  serviceAccountName: ai-sync
-
   schedule: "*/30 * * * *"
 
   successfulJobsHistoryLimit: 3
@@ -714,17 +711,13 @@ moonin-ai-sync:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-ai-sync
     pullPolicy: IfNotPresent
-    tag: "20261030-openai-compatible-arm64-1"
+    tag: "20261030-openai-only-arm64-1"
 
   nameOverride: ""
   fullnameOverride: ""
 
-  # Leave empty to use the default model (google/gemini-2.5-flash-lite).
-  # Ignored when configSecret.existingSecret is configured.
-  aiModel: ""
-
   configSecret:
-    existingSecret: ""
+    existingSecret: moonin-ai-sync-config
 
   # Secret that holds DATABASE_URL.
   dbSecret:

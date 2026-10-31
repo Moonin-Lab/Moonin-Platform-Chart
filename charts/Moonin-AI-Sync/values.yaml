@@ -1,6 +1,5 @@
 enabled: true
 namespace: moonin
-serviceAccountName: ai-sync
 schedule: "*/30 * * * *"
 successfulJobsHistoryLimit: 3
 failedJobsHistoryLimit: 3
@@ -9,13 +8,12 @@ backoffLimit: 2
 image:
   repository: ghcr.io/moonin-lab/moonin-platform/moonin-ai-sync
   pullPolicy: IfNotPresent
-  tag: "20261030-openai-compatible-arm64-1"
+  tag: "20261030-openai-only-arm64-1"
 
 nameOverride: ""
 fullnameOverride: ""
-aiModel: ""
 configSecret:
-  existingSecret: ""
+  existingSecret: moonin-ai-sync-config
 
 dbSecret:
   name: db-secret
