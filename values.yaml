@@ -714,13 +714,17 @@ moonin-ai-sync:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-ai-sync
     pullPolicy: IfNotPresent
-    tag: "20260927164852"
+    tag: "20261030-openai-compatible-arm64-1"
 
   nameOverride: ""
   fullnameOverride: ""
 
   # Leave empty to use the default model (google/gemini-2.5-flash-lite).
+  # Ignored when configSecret.existingSecret is configured.
   aiModel: ""
+
+  configSecret:
+    existingSecret: ""
 
   # Secret that holds DATABASE_URL.
   dbSecret:

@@ -37,13 +37,18 @@ spec:
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               securityContext:
                 {{- toYaml .Values.securityContext | nindent 16 }}
+              {{- with .Values.configSecret.existingSecret }}
+              envFrom:
+                - secretRef:
+                    name: {{ . | quote }}
+              {{- end }}
               env:
                 - name: DATABASE_URL
                   valueFrom:
                     secretKeyRef:
                       name: {{ .Values.dbSecret.name }}
                       key: {{ .Values.dbSecret.key }}
-                {{- if .Values.aiModel }}
+                {{- if and .Values.aiModel (not .Values.configSecret.existingSecret) }}
                 - name: AI_MODEL
                   value: {{ .Values.aiModel | quote }}
                 {{- end }}

@@ -1,0 +1,48 @@
+enabled: true
+namespace: moonin
+serviceAccountName: ai-sync
+schedule: "*/30 * * * *"
+successfulJobsHistoryLimit: 3
+failedJobsHistoryLimit: 3
+backoffLimit: 2
+
+image:
+  repository: ghcr.io/moonin-lab/moonin-platform/moonin-ai-sync
+  pullPolicy: IfNotPresent
+  tag: "20261030-openai-compatible-arm64-1"
+
+nameOverride: ""
+fullnameOverride: ""
+aiModel: ""
+configSecret:
+  existingSecret: ""
+
+dbSecret:
+  name: db-secret
+  key: DATABASE_URL
+license:
+  existingSecret: moonin-license
+  key: MOONIN_LICENSE
+
+podAnnotations: {}
+podSecurityContext: {}
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
+  runAsUser: 1000
+  readOnlyRootFilesystem: true
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
