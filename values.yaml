@@ -177,7 +177,7 @@ moonin-portal-ui:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-portal-ui
     pullPolicy: IfNotPresent
-    tag: "20261029-dependencies-response-normalization-arm64-1"
+    tag: "20261101-demo-observability-workloads-1"
 
   # Server-side Portal authentication configuration. Create it with:
   # moonin-installer platform install
