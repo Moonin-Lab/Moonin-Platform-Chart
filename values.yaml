@@ -312,7 +312,9 @@ moonin-admin-ui:
 
   env:
     api_base_url: "http://moonin-platform-moonin-api.arguz.svc.cluster.local:4001"
-    app_url: "https://admin.moonin.app"
+    # Destination of Admin Console's "Back to App" link. This is the Portal,
+    # not the Admin Console origin.
+    app_url: "https://portal.moonin.app"
     # Filled by Moonin Installer from the selected public Ingress domain.
     # Leave empty for a direct Helm deployment until external agent endpoints
     # are known; Admin UI will then refuse to generate an unsafe command.
