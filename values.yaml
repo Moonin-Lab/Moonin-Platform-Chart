@@ -292,7 +292,7 @@ moonin-admin-ui:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-admin-ui
     pullPolicy: IfNotPresent
-    tag: "20261024-runtime-security-arm64-1"
+    tag: "20261114-multiarch-1"
 
   license:
     existingSecret: moonin-license
@@ -592,7 +592,7 @@ moonin-ingestion-api:
       pullPolicy: IfNotPresent
       # This image bootstraps through ClickHouse's built-in default database,
       # so first deployment can create the Moonin analytics database safely.
-      tag: "20261024-runtime-security-2"
+      tag: "20261114-security-host-pid-1"
 
   clickhouse:
     # Create this Secret before deployment. It contains CLICKHOUSE_DSN.
@@ -623,7 +623,7 @@ moonin-ingestion-api:
     image:
       repository: ghcr.io/moonin-lab/moonin-platform/moonin-ingestion-query-api
       pullPolicy: IfNotPresent
-      tag: "20261029-downstreams-sql-diagnostics-arm64-2"
+      tag: "20261114-multiarch-1"
 
   jetstreamBootstrap:
     enabled: true
@@ -713,7 +713,7 @@ moonin-ai-sync:
   image:
     repository: ghcr.io/moonin-lab/moonin-platform/moonin-ai-sync
     pullPolicy: IfNotPresent
-    tag: "20261030-openai-only-arm64-1"
+    tag: "20261114-multiarch-1"
 
   nameOverride: ""
   fullnameOverride: ""
