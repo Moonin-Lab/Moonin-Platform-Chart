@@ -2,8 +2,59 @@ apiVersion: v1
 entries:
   moonin-platform:
   - apiVersion: v2
+    appVersion: 20261128-portal-service-tabs-1
+    created: "2026-11-28T18:39:54.512029638Z"
+    dependencies:
+    - condition: moonin-api.enabled
+      name: moonin-api
+      repository: ""
+      version: '>=0.1.0'
+    - condition: moonin-scaling-rules-api.enabled
+      name: moonin-scaling-rules-api
+      repository: ""
+      version: '>=0.1.0'
+    - condition: moonin-portal-ui.enabled
+      name: moonin-portal-ui
+      repository: ""
+      version: '>=0.1.0'
+    - condition: moonin-admin-ui.enabled
+      name: moonin-admin-ui
+      repository: ""
+      version: '>=0.1.0'
+    - condition: moonin-notifier-engine.enabled
+      name: moonin-notifier-engine
+      repository: ""
+      version: '>=0.1.0'
+    - condition: moonin-mcp-server.enabled
+      name: moonin-mcp-server
+      repository: ""
+      version: '>=0.1.0'
+    - condition: moonin-chatbot-api.enabled
+      name: moonin-chatbot-api
+      repository: ""
+      version: '>=0.1.0'
+    - condition: moonin-billing-sync.enabled
+      name: moonin-billing-sync
+      repository: ""
+      version: '>=0.1.0'
+    - condition: moonin-ai-sync.enabled
+      name: moonin-ai-sync
+      repository: ""
+      version: '>=0.1.0'
+    - condition: moonin-ingestion-api.enabled
+      name: moonin-ingestion-api
+      repository: ""
+      version: '>=0.1.0'
+    description: A Helm chart for Kubernetes
+    digest: 31962ae4f843a670f06e2b71ee147d800edc5ca12490f55c5a4dd40d1cd50da9
+    name: moonin-platform
+    type: application
+    urls:
+    - https://Moonin-Lab.github.io/Moonin-Platform-Chart/moonin-platform-0.1.46.tgz
+    version: 0.1.46
+  - apiVersion: v2
     appVersion: 20261128-portal-service-design-1
-    created: "2026-11-28T17:59:11.747010707Z"
+    created: "2026-11-28T18:39:54.5089598Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -54,7 +105,7 @@ entries:
     version: 0.1.45
   - apiVersion: v2
     appVersion: 20261128-portal-errors-1
-    created: "2026-11-28T17:59:11.742741772Z"
+    created: "2026-11-28T18:39:54.505317349Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -105,7 +156,7 @@ entries:
     version: 0.1.44
   - apiVersion: v2
     appVersion: 20261128-portal-service360-1
-    created: "2026-11-28T17:59:11.739535708Z"
+    created: "2026-11-28T18:39:54.502587818Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -156,7 +207,7 @@ entries:
     version: 0.1.43
   - apiVersion: v2
     appVersion: 20261128-portal-applications-1
-    created: "2026-11-28T17:59:11.735542762Z"
+    created: "2026-11-28T18:39:54.499114121Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -207,7 +258,7 @@ entries:
     version: 0.1.42
   - apiVersion: v2
     appVersion: 20261108-runtime-security-cluster-switch-1
-    created: "2026-11-28T17:59:11.7324742Z"
+    created: "2026-11-28T18:39:54.496357271Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -258,7 +309,7 @@ entries:
     version: 0.1.41
   - apiVersion: v2
     appVersion: 20261108-runtime-security-cluster-switch-1
-    created: "2026-11-28T17:59:11.728619108Z"
+    created: "2026-11-28T18:39:54.492886247Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -309,7 +360,7 @@ entries:
     version: 0.1.40
   - apiVersion: v2
     appVersion: 20261108-runtime-security-cluster-switch-1
-    created: "2026-11-28T17:59:11.722639034Z"
+    created: "2026-11-28T18:39:54.486787446Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -360,7 +411,7 @@ entries:
     version: 0.1.39
   - apiVersion: v2
     appVersion: 20261108-runtime-security-cluster-switch-1
-    created: "2026-11-28T17:59:11.718707525Z"
+    created: "2026-11-28T18:39:54.484052267Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -411,7 +462,7 @@ entries:
     version: 0.1.38
   - apiVersion: v2
     appVersion: 20261108-runtime-security-cluster-switch-1
-    created: "2026-11-28T17:59:11.715635414Z"
+    created: "2026-11-28T18:39:54.48048742Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -462,7 +513,7 @@ entries:
     version: 0.1.37
   - apiVersion: v2
     appVersion: 20261108-runtime-security-cluster-switch-1
-    created: "2026-11-28T17:59:11.711882169Z"
+    created: "2026-11-28T18:39:54.477735024Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -513,7 +564,7 @@ entries:
     version: 0.1.35
   - apiVersion: v2
     appVersion: 20261108-runtime-security-cluster-switch-1
-    created: "2026-11-28T17:59:11.708772818Z"
+    created: "2026-11-28T18:39:54.474284858Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -564,7 +615,7 @@ entries:
     version: 0.1.34
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.705638727Z"
+    created: "2026-11-28T18:39:54.47150001Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -615,7 +666,7 @@ entries:
     version: 0.1.33
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.701730464Z"
+    created: "2026-11-28T18:39:54.468078351Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -666,7 +717,7 @@ entries:
     version: 0.1.32
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.698614586Z"
+    created: "2026-11-28T18:39:54.46532289Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -717,7 +768,7 @@ entries:
     version: 0.1.31
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.69468679Z"
+    created: "2026-11-28T18:39:54.461796022Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -768,7 +819,7 @@ entries:
     version: 0.1.30
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.688853014Z"
+    created: "2026-11-28T18:39:54.455445548Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -819,7 +870,7 @@ entries:
     version: 0.1.29
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.685027281Z"
+    created: "2026-11-28T18:39:54.452799206Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -870,7 +921,7 @@ entries:
     version: 0.1.28
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.682077817Z"
+    created: "2026-11-28T18:39:54.449592447Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -921,7 +972,7 @@ entries:
     version: 0.1.27
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.678198862Z"
+    created: "2026-11-28T18:39:54.446800337Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -972,7 +1023,7 @@ entries:
     version: 0.1.26
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.67522264Z"
+    created: "2026-11-28T18:39:54.443744692Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1023,7 +1074,7 @@ entries:
     version: 0.1.25
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.672251179Z"
+    created: "2026-11-28T18:39:54.440751406Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1074,7 +1125,7 @@ entries:
     version: 0.1.24
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.668337285Z"
+    created: "2026-11-28T18:39:54.438101636Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1125,7 +1176,7 @@ entries:
     version: 0.1.23
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.665374181Z"
+    created: "2026-11-28T18:39:54.434727697Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1176,7 +1227,7 @@ entries:
     version: 0.1.22
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.661624837Z"
+    created: "2026-11-28T18:39:54.432106001Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1227,7 +1278,7 @@ entries:
     version: 0.1.21
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.65862999Z"
+    created: "2026-11-28T18:39:54.428663061Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1278,7 +1329,7 @@ entries:
     version: 0.1.20
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.651778664Z"
+    created: "2026-11-28T18:39:54.422667832Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1329,7 +1380,7 @@ entries:
     version: 0.1.19
   - apiVersion: v2
     appVersion: 0.1.13
-    created: "2026-11-28T17:59:11.648764124Z"
+    created: "2026-11-28T18:39:54.42007169Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1380,7 +1431,7 @@ entries:
     version: 0.1.16
   - apiVersion: v2
     appVersion: 0.1.12
-    created: "2026-11-28T17:59:11.644989765Z"
+    created: "2026-11-28T18:39:54.416628335Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1431,7 +1482,7 @@ entries:
     version: 0.1.15
   - apiVersion: v2
     appVersion: 0.1.11
-    created: "2026-11-28T17:59:11.642017256Z"
+    created: "2026-11-28T18:39:54.413969866Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1482,7 +1533,7 @@ entries:
     version: 0.1.14
   - apiVersion: v2
     appVersion: 0.1.10
-    created: "2026-11-28T17:59:11.63808143Z"
+    created: "2026-11-28T18:39:54.410544439Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1533,7 +1584,7 @@ entries:
     version: 0.1.13
   - apiVersion: v2
     appVersion: 0.1.10
-    created: "2026-11-28T17:59:11.635109223Z"
+    created: "2026-11-28T18:39:54.407870073Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1584,7 +1635,7 @@ entries:
     version: 0.1.12
   - apiVersion: v2
     appVersion: 0.1.10
-    created: "2026-11-28T17:59:11.631402161Z"
+    created: "2026-11-28T18:39:54.404540973Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1635,7 +1686,7 @@ entries:
     version: 0.1.11
   - apiVersion: v2
     appVersion: 0.1.10
-    created: "2026-11-28T17:59:11.628258435Z"
+    created: "2026-11-28T18:39:54.401909377Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1686,7 +1737,7 @@ entries:
     version: 0.1.10
   - apiVersion: v2
     appVersion: 0.1.9
-    created: "2026-11-28T17:59:11.760065695Z"
+    created: "2026-11-28T18:39:54.523935131Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1737,7 +1788,7 @@ entries:
     version: 0.1.9
   - apiVersion: v2
     appVersion: 0.1.7
-    created: "2026-11-28T17:59:11.757180644Z"
+    created: "2026-11-28T18:39:54.521344207Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1788,7 +1839,7 @@ entries:
     version: 0.1.7
   - apiVersion: v2
     appVersion: 0.1.6
-    created: "2026-11-28T17:59:11.752956479Z"
+    created: "2026-11-28T18:39:54.517951545Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1839,7 +1890,7 @@ entries:
     version: 0.1.6
   - apiVersion: v2
     appVersion: 0.1.5
-    created: "2026-11-28T17:59:11.749996896Z"
+    created: "2026-11-28T18:39:54.515404801Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1890,7 +1941,7 @@ entries:
     version: 0.1.5
   - apiVersion: v2
     appVersion: 0.1.4
-    created: "2026-11-28T17:59:11.725550283Z"
+    created: "2026-11-28T18:39:54.490141828Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1941,7 +1992,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 0.1.3
-    created: "2026-11-28T17:59:11.691785661Z"
+    created: "2026-11-28T18:39:54.45893555Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -1992,7 +2043,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 0.1.2
-    created: "2026-11-28T17:59:11.655470415Z"
+    created: "2026-11-28T18:39:54.426047705Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -2043,7 +2094,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2026-11-28T17:59:11.624521806Z"
+    created: "2026-11-28T18:39:54.398477936Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -2094,7 +2145,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2026-11-28T17:59:11.62062449Z"
+    created: "2026-11-28T18:39:54.395804466Z"
     dependencies:
     - condition: moonin-api.enabled
       name: moonin-api
@@ -2143,4 +2194,4 @@ entries:
     urls:
     - https://Moonin-Lab.github.io/Moonin-Platform-Chart/moonin-platform-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-28T17:59:11.617066708Z"
+generated: "2026-11-28T18:39:54.392900808Z"
